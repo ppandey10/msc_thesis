@@ -39,6 +39,7 @@
 \titlespacing{\subsubsection}{0pt}{3.3ex}{1ex}
 \usepackage{color}
 
+
 % PACKAGES FOR LANGUAGE AND FONT
 \usepackage[english]{babel} % The document is in English
 \usepackage[utf8]{inputenc} % UTF8 encoding
@@ -61,6 +62,9 @@
 \usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
 \usepackage{float}
 
+% PACKAGES FOR BOXES
+\usepackage{tikz,lipsum,lmodern}
+\usepackage[most]{tcolorbox}
 % STANDARD MATH PACKAGES
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -84,7 +88,7 @@
 \usepackage{verbatim}
 
 % PACKAGES FOR REFERENCES & BIBLIOGRAPHY
-\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
+\usepackage[colorlinks=true,linkcolor=blue,anchorcolor=blue,citecolor=blue,filecolor=blue,menucolor=blue,runcolor=blue,urlcolor=blue]{hyperref} % Adds clickable links at references
 \usepackage{cleveref}
 \usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
 \bibliographystyle{unsrtnat} % You may use a different style adapted to your field
@@ -141,13 +145,13 @@
 \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
 
 \puttitle{
-	title=Machine Learning for Gravitational Waveform Modelling, % Title of the thesis
-	name=Prasoon Pandey, % Author Name and Surname
-	course= Master of Science in Physics, % Study Programme (in Italian)
+	title = Machine Learning for Gravitational Waveform Modelling, % Title of the thesis
+	name = Prasoon Pandey, % Author Name and Surname
+	course = Master of Science in Physics, % Study Programme (in Italian)
 	ID  =  205171,  % Student ID number (numero di matricola)
 	advisor = Prof. Dr. Sebastiano Bernuzzi, % Supervisor name
 	coadvisor = Dr. Luís Felipe Longo Micchi, % Co-Supervisor name, remove this line if there is none
-	academicyear={2024-25},  % Academic Year
+	academicyear = {2024-25},  % Academic Year
 }
 
 %----------------------------------------------------------------------------
@@ -204,8 +208,14 @@
 % NUMBERED CHAPTERS % Regular chapters following
 % --------------------------------------------------------------------------
 
-\chapter{Chapter 1}
-\input{Chapters/Chapter_1}
+\chapter{Introduction}
+\input{Chapters/Chapter_1_Intro}
+
+\chapter{Gravitational Waves Theory}
+\input{Chapters/Chapter_2_GW_theory}
+
+\chapter{Machine Learning Techniques}
+\input{Chapters/Chapter_3_ML_theory}
 
 \chapter{Conclusion}
 \input{Chapters/Conclusion}
