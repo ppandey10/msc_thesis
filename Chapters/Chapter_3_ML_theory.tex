@@ -58,6 +58,7 @@ During the learning/training process, we learn the parameters using a set of tra
 
 \begin{equation}
     \theta^* = \operatorname*{argmin}_\theta \mathcal{L}(\mathcal{D}, \theta).
+    \label{eq:argmin_loss}
 \end{equation}
 
 There is a systematical way called \textit{optimization algorithm} to find the best parameters $\theta^*$ that help the model reach global or local minimum of the loss function. This will be discussed later in this chapter. 
@@ -190,6 +191,150 @@ Just like previous sections, there are a few keywords which have not been define
 \end{table}
 
 \subsection{Loss Functions}
+
+So far its quite clear, in supervised learning, a model is trained to approximate a mapping from input data to target outputs. The loss function, also referred to as the \textbf{objective function,} plays a critical role in this process by quantifying the discrepancy between the model's predictions and the actual labels. Minimizing this loss function is central to the optimization procedure that drives the learning process.
+
+Mathematically, given a dataset \( \mathcal{D} = \{(x_i, y_i)\}_{i=1}^N \), where \( x_i \in \mathbb{R}^d \) represents the input features and \( y_i \in \mathbb{R} \) (or \( \mathbb{R}^k \) in the case of multi-class problems) denotes the corresponding label, the model output is denoted as \( \hat{y}_i = f_\theta(x_i) \), with \( \theta \) being the parameters of the model. The loss function \( \mathcal{L}(\hat{y}_i, y_i) \) is defined to measure the performance for each example. The total loss over the dataset is:
+
+\[
+\mathcal{L}_{\text{total}} = \frac{1}{N} \sum_{i=1}^N \mathcal{L}(\hat{y}_i, y_i)
+\]
+
+The choice of loss function depends on the nature of the problem:
+
+\begin{itemize}
+    \item \textbf{Mean Squared Error (MSE):} Widely used in regression problems and defined as
+    \begin{equation}
+        \mathcal{L}_{\text{MSE}} = \frac{1}{N} \sum_{i=1}^N (\hat{y}_i - y_i)^2
+        \label{eq:mse_loss}
+    \end{equation}
+    This loss penalizes large deviations more heavily due to the square term, making it sensitive to outliers.
+
+    \item \textbf{Binary Cross-Entropy (BCE):} Commonly used for binary classification tasks:
+    \begin{equation}
+        \mathcal{L}_{\text{BCE}} = -\frac{1}{N} \sum_{i=1}^N \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+        \label{eq:bce_loss}
+    \end{equation}
+    This loss function assumes \( \hat{y}_i \in (0, 1) \), making it suitable for models with a sigmoid output layer.
+
+    \item \textbf{Categorical Cross-Entropy:} An extension of BCE used in multi-class classification problems with softmax output layers.
+\end{itemize}
+
+Loss functions not only guide the training process but also influence convergence properties and robustness. Therefore, in many cases, researchers build a custom loss function to handle the specific problem at hand which has even led to a separate field called the \textit{physics-informed machine learning}. 
+
+\subsection{Backpropagation}
+
+Upto this point, we have discussed many theoretical ideas involved in machine learning. However, one might question how does training process work, and how do we find the best parameters for the model. This is where the backpropagation and optimization algorithms come into play.
+
+Let's first dig into the core idea of the backpropagation algorithm. 
+
+\begin{tcolorbox}[colback=red!5!white, colframe=red!75!black]
+    Backpropagation is a method for computing the gradient of the loss function with respect to the model parameters.
+\end{tcolorbox}
+
+As highlighted in equation \ref{eq:argmin_loss}, we want to obtain a set of parameters $\theta^*$ that minimizes the loss function $\mathcal{L}$ by updating the parameters like weights matrix $\textbf{W}$ and biases $\textbf{b}$. During this process, we iteratively update the parameters by computing the gradient of the loss function with respect to the parameters. The backpropagation algorithm offers a very computationally efficient approach to compute the partial derivatives of a complex, non-convex loss function in multilayer neural networks.  
+
+This idea can be better understood when combined with optimization algorithms.
+
+\subsection{Optimization Algorithms}
+
+The whole basis of machine learning in build on the idea of paramter estimation for my neural network so that it can mimic the underlying function. This requires solving an optimization problem, where we try to find the values for a set of variables $\theta \in \Theta$, that minimize a scalar-valued loss function or cost function $\mathcal{L} : \Theta \rightarrow \mathbb{R}$:
+
+\begin{equation}
+    \theta^* = \operatorname*{argmin}_{\theta \in \Theta} \mathcal{L}(\theta)
+    \label{eq:argmin_loss_opt}
+\end{equation}
+
+The algoithms involved in this optimization problem are called \textbf{solver}. There are multiple solvers available but the most common ones are:
+\begin{itemize}
+    \item \textbf{Gradient Descent:} A first-order optimization algorithm that iteratively updates the parameters in the direction of the steepest descent of the loss function.
+    Upon initialization, the parameters are set to some random values $\theta_0$. Then at each iteration $t$, they perform an update of the following form:
+
+    \begin{equation}
+        \theta_{t+1} = \theta_t - \eta \nabla \mathcal{L}(\theta_t)
+        \label{eq:gradient_descent}
+    \end{equation}
+
+    where, $\eta$ is the \textbf{learning rate}. The learning rate is another hyperparameter that controls the step size of the gradient descent. It is a crucial parameter that determines the speed and accuracy of the optimization process.
+
+    Formally, we require that there exists an $\eta_{\text{max}} > 0$ such that:
+
+    \begin{equation}
+        \mathcal{L}(\theta_{t+1}) \leq \mathcal{L}(\theta_t)
+        \label{eq:gradient_descent_bound}
+    \end{equation}
+
+    for all $\eta \in [0, \eta_{\text{max}}]$.
+
+
+    \item \textbf{Stochastic Gradient Descent (SGD):} A variant of gradient descent that uses a small subset of the training data (mini-batch) to compute the gradient.
+    We can write the update rule for SGD as:
+
+    \begin{equation}
+        \theta_{t+1} = \theta_t - \eta \nabla \mathcal{L}_i (\theta_t)
+        \label{eq:sgd}
+    \end{equation}
+
+    where, $\mathcal{L}_i (\theta_t)$ is the loss function evaluated on the $i$-th training example.
+
+    One should also note that stochastic gradient is an unbiased estimator of the true gradient:
+
+    \begin{equation}
+        \mathbb{E}[\nabla_{\theta} \mathcal{L}_i (\theta_t)] = \nabla_{\theta} \mathcal{L}(\theta_t)
+        \label{eq:sgd_unbiased}
+    \end{equation}
+
+    Finally, we can use it on a mini-batch of size $\mathcal{B}$ to compute the gradient:
+
+    \begin{equation}
+        \textbf{g}_t \approx \frac{1}{|\mathcal{B}_t|} \sum_{i \in \mathcal{B}_t} \nabla_{\theta} \mathcal{L}_i(\theta_t)
+        \label{eq:sgd_batch}
+    \end{equation}
+
+    and the update rule becomes:
+
+    \begin{equation}
+        \theta_{t+1} = \theta_t - \eta \textbf{g}_t
+        \label{eq:sgd_batch_update}
+    \end{equation}
+
+    where, $\mathcal{B}_t$ is the mini-batch of size $\mathcal{B}$ at iteration $t$.
+
+    \item \textbf{ADAM:} A second-order optimization algorithm that uses the gradient and the Hessian matrix to update the parameters.
+    
+    ADAM is a combination of lot of ideas from the field of optimization. To trace it back, we move:
+
+    \begin{equation*}
+        \textbf{AdaGrad} \rightarrow \textbf{RMSProp} \rightarrow \textbf{ADAM}
+    \end{equation*}    
+
+    I would recommend reading \cite{pml1Book} for more details on this approach. However, to break it down formally we introduce two new terms namely momentum and RMSProp:
+
+    \begin{align}
+        \textbf{m}_{t} &= \beta_1 \textbf{m}_{t-1} + (1 - \beta_1)\textbf{g}_t \\ 
+        \textbf{s}_{t} &= \beta_2 \textbf{s}_{t-1} + (1 - \beta_2)\textbf{g}_t^2.
+        \label{eq:adam_m_s}
+    \end{align}
+
+    The update rule translates to:
+    
+    \begin{equation}
+        \theta_{t+1, d} = \theta_{t,d} - \eta_t \frac{1}{\sqrt{s_{t,d}} + \epsilon} \textbf{m}_{t, d}
+        \label{eq:adam_update}
+    \end{equation}
+
+    where, $\beta_1$ and $\beta_2$ are the momentum and RMSProp parameters respectively.
+
+\end{itemize}
+
+Now, we can clearly find the application of the backpropagation algorithm in the context of neural networks. For dense neural networks, the gradient calculation could have been a nightmare. However, with the help of the backpropagation algorithm, we can compute the gradient of the loss function with respect to the parameters of the any neuron in the network.
+
+
+\section{Gaussian Process Regression}
+
+
+
+
 
 
     
